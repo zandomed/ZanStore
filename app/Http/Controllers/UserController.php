@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
+use Illuminate\Http\Request;
+
 
 class UserController extends Controller
 {
@@ -34,27 +36,32 @@ class UserController extends Controller
         return baseJsonResponse($user, 201, true, 'User created successfully.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(User $user)
+    public function me(Request $request)
     {
-        //
+        return baseJsonResponse($request->user());
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateUserRequest $request, User $user)
-    {
-        //
-    }
+    // /**
+    //  * Display the specified resource.
+    //  */
+    // public function show(User $user)
+    // {
+    //     //
+    // }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(User $user)
-    {
-        //
-    }
+    // /**
+    //  * Update the specified resource in storage.
+    //  */
+    // public function update(UpdateUserRequest $request, User $user)
+    // {
+    //     //
+    // }
+
+    // /**
+    //  * Remove the specified resource from storage.
+    //  */
+    // public function destroy(User $user)
+    // {
+    //     //
+    // }
 }

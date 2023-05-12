@@ -41,7 +41,5 @@ Route::post('logout', [AuthController::class, 'logout']);
  * User Module
  * -----------------------------------------
  */
-Route::middleware('auth:sanctum')->get('/me', function (Request $request) {
-    return $request->user();
-});
+Route::get('me', [UserController::class, 'me']);
 Route::resource('users', UserController::class)->except(['create', 'edit']);
