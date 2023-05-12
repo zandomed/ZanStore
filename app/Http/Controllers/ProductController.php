@@ -6,10 +6,17 @@ use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
 use Illuminate\Http\JsonResponse;
-use Storage;
+use Illuminate\Support\Facades\Auth;
+
 
 class ProductController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum')->except(['index', 'show']);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -24,15 +31,16 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-
         try {
             $validatedData = $request->validated();
-            $product = Product::create($validatedData);
+            $product = new Product($validatedData);
+            $product->user_id = Auth::id();
+            $product->save();
+            return baseJsonResponse($product, 201);
         } catch (\Throwable $th) {
             return baseJsonResponse(null, 500, false, $th->getMessage());
         }
 
-        return baseJsonResponse($product, 201);
     }
 
     /**
@@ -48,10 +56,20 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
-        $validatedData = $request->validated();
-        $product->fill($validatedData);
-        $product->save();
-        return baseJsonResponse($product);
+
+        $userId = Auth::id();
+        if ($userId !== $product->user_id) {
+            return baseJsonResponse(null, 403, false, 'You are not authorized to update this product.');
+        }
+        try {
+
+            $validatedData = $request->validated();
+            $product->fill($validatedData);
+            $product->save();
+            return baseJsonResponse($product);
+        } catch (\Throwable $th) {
+            return baseJsonResponse(null, 500, false, $th->getMessage());
+        }
     }
 
     /**
@@ -59,7 +77,17 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        $product->delete();
-        return baseJsonResponse(null, 204);
+        $userId = Auth::id();
+
+        if ($userId !== $product->user_id) {
+            return baseJsonResponse(null, 403, false, 'You are not authorized to delete this product.');
+        }
+
+        try {
+            $product->delete();
+            return baseJsonResponse(null, 204);
+        } catch (\Throwable $th) {
+            return baseJsonResponse(null, 500, false, $th->getMessage());
+        }
     }
 }

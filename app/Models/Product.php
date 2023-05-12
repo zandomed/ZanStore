@@ -19,8 +19,21 @@ class Product extends Model
      */
     protected $fillable = [
         'name',
-        'description' => '',
+        'description',
         'price',
+    ];
+
+    protected $attributes = [
+        'description' => null,
+    ];
+
+     /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'deleted_at',
     ];
 
     /**
